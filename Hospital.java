@@ -21,39 +21,28 @@ public class Hospital {
         System.out.print("Number of patients: ");
         numberOfPatients = input.nextInt();
 
-
         if (waitingRoomCapacity <= 0 ||
-            numberOfDoctors <= 0 ||
-            numberOfPatients <= 0) {
+                numberOfDoctors <= 0 ||
+                numberOfPatients <= 0) {
 
             System.out.println("All values must be greater than zero.");
             input.close();
             return;
         }
 
+        WaitingRoom waitingRoom = new WaitingRoom(waitingRoomCapacity);
 
-        WaitingRoom waitingRoom =
-                new WaitingRoom(waitingRoomCapacity);
+        TreatmentRooms treatmentRooms = new TreatmentRooms();
 
-
-        TreatmentRooms treatmentRooms =
-                new TreatmentRooms();
-
-
-        AtomicInteger treatedPatients =
-                new AtomicInteger(0);
+        AtomicInteger treatedPatients = new AtomicInteger(0);
 
         Object completionMonitor = new Object();
 
-        Patient[] patients =
-                new Patient[numberOfPatients];
+        Patient[] patients = new Patient[numberOfPatients];
 
-        Thread[] doctorThreads =
-                new Thread[numberOfDoctors];
+        Thread[] doctorThreads = new Thread[numberOfDoctors];
 
-        Thread[] patientThreads =
-                new Thread[numberOfPatients];
-
+        Thread[] patientThreads = new Thread[numberOfPatients];
 
         Random random = new Random();
 
@@ -61,7 +50,7 @@ public class Hospital {
 
         for (int i = 0; i < numberOfPatients; i++) {
             patients[i] = new Patient(i + 1, waitingRoom);
-            System.out.print(patients[i].getname() + " ");
+            System.out.print(patients[i].getName() + " ");
         }
 
         System.out.println("\n");
@@ -77,12 +66,10 @@ public class Hospital {
 
                         System.out.println(
                                 "Doctor " + doctorId +
-                                " begins treating " +
-                                patient.getname() + "."
-                        );
+                                        " begins treating " +
+                                        patient.getName() + ".");
 
-                        int treatmentTime =
-                                random.nextInt(3000) + 1000;
+                        int treatmentTime = random.nextInt(3000) + 1000;
 
                         try {
                             Thread.sleep(treatmentTime);
@@ -92,26 +79,21 @@ public class Hospital {
 
                         System.out.println(
                                 "Doctor " + doctorId +
-                                " finished treating " +
-                                patient.getname() + "."
-                        );
+                                        " finished treating " +
+                                        patient.getName() + ".");
 
                         patient.leave();
 
-
                         treatedPatients.incrementAndGet();
-
 
                         synchronized (completionMonitor) {
                             completionMonitor.notifyAll();
                         }
-                    }
-            );
+                    });
 
             doctorThreads[i] = new Thread(
                     doctor,
-                    "Doctor-" + doctorId
-            );
+                    "Doctor-" + doctorId);
 
             doctorThreads[i].start();
         }
@@ -148,11 +130,9 @@ public class Hospital {
             }
         }
 
-
         for (int i = 0; i < numberOfDoctors; i++) {
             doctorThreads[i].interrupt();
         }
-
 
         for (int i = 0; i < numberOfDoctors; i++) {
 
@@ -164,7 +144,6 @@ public class Hospital {
                 return;
             }
         }
-
 
         System.out.println("\nAll patients have been treated.");
         System.out.println("Simulation completed.");
