@@ -1,6 +1,4 @@
 import java.util.Scanner;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Hospital {
 
@@ -34,17 +32,17 @@ public class Hospital {
 
         TreatmentRooms treatmentRooms = new TreatmentRooms();
 
-        AtomicInteger treatedPatients = new AtomicInteger(0);
-
-        Object completionMonitor = new Object();
-
-        Patient[] patients = new Patient[numberOfPatients];
+        Semaphore treatedPatients = new Semaphore(0);
 
         Thread[] doctorThreads = new Thread[numberOfDoctors];
 
-        Thread[] patientThreads = new Thread[numberOfPatients];
+        for (int i = 0; i < numberOfDoctors; i++) {
+            doctorThreads[i] = new Thread(
+                    new Doctor(i + 1, waitingRoom, treatmentRooms, treatedPatients));
+            doctorThreads[i].start();
+        }
 
-        Random random = new Random();
+        Patient[] patients = new Patient[numberOfPatients];
 
         System.out.println("\nPatients arriving:");
 
@@ -55,74 +53,27 @@ public class Hospital {
 
         System.out.println("\n");
 
-        for (int i = 0; i < numberOfDoctors; i++) {
-
-            final int doctorId = i + 1;
-
-            Doctor doctor = new Doctor(
-                    waitingRoom,
-                    treatmentRooms,
-                    patient -> {
-
-                        System.out.println(
-                                "Doctor " + doctorId +
-                                        " begins treating " +
-                                        patient.getName() + ".");
-
-                        int treatmentTime = random.nextInt(3000) + 1000;
-
-                        try {
-                            Thread.sleep(treatmentTime);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-
-                        System.out.println(
-                                "Doctor " + doctorId +
-                                        " finished treating " +
-                                        patient.getName() + ".");
-
-                        patient.leave();
-
-                        treatedPatients.incrementAndGet();
-
-                        synchronized (completionMonitor) {
-                            completionMonitor.notifyAll();
-                        }
-                    });
-
-            doctorThreads[i] = new Thread(
-                    doctor,
-                    "Doctor-" + doctorId);
-
-            doctorThreads[i].start();
-        }
-
         for (int i = 0; i < numberOfPatients; i++) {
 
-            patientThreads[i] = patients[i];
+            patients[i] = patients[i];
 
-            patientThreads[i].start();
-        }
-
-        synchronized (completionMonitor) {
-
-            while (treatedPatients.get() < numberOfPatients) {
-
-                try {
-                    completionMonitor.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    input.close();
-                    return;
-                }
-            }
+            patients[i].start();
         }
 
         for (int i = 0; i < numberOfPatients; i++) {
 
             try {
-                patientThreads[i].join();
+                patients[i].join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                input.close();
+                return;
+            }
+        }
+
+        for (int i = 0; i < numberOfPatients; i++) {
+            try {
+                treatedPatients.acquire();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 input.close();
