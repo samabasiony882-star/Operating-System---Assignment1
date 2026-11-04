@@ -21,20 +21,29 @@ class WaitingRoom {
     public void addPatient(Patient p) {
         try {
             mutex.acquire();
-            if (count == capacity) {
+            try{
+                if (count == capacity) {
                 System.out.println("The waiting room is full!");
                 System.out.println(p.getname() + " is waiting outside for an available seat.");
             }
-            mutex.release();
-
+            }
+            finally{
+                mutex.release();
+            }
+            
             emptyspaces.acquire();
 
             mutex.acquire();
-            totalpatients[inptr] = p;
-            inptr = (inptr + 1) % capacity;
-            count++;
-            System.out.println(p.getname() + " entered the waiting room");
-            mutex.release();
+            try{
+                totalpatients[inptr] = p;
+                inptr = (inptr + 1) % capacity;
+                count++;
+                System.out.println(p.getname() + " entered the waiting room");
+            }
+            finally{
+                mutex.release();
+            }
+            
 
             patients.release();
         } catch (InterruptedException e) {
@@ -47,12 +56,17 @@ class WaitingRoom {
         try {
             patients.acquire();
 
+            Patient p;
             mutex.acquire();
-            Patient p = totalpatients[outptr];
-            outptr = (outptr + 1) % capacity;
-            count--;
-            System.out.println("The doctor is getting " + p.getname());
-            mutex.release();
+            try{
+                p = totalpatients[outptr];
+                outptr = (outptr + 1) % capacity;
+                count--;
+                System.out.println("The doctor is getting " + p.getname());
+            }
+            finally{
+                mutex.release();
+            }
 
             emptyspaces.release();
             return p;
@@ -69,11 +83,17 @@ class WaitingRoom {
             emptyspaces.acquire();
 
             mutex.acquire();
-            outptr = (outptr - 1 + capacity) % capacity;
-            totalpatients[outptr] = p;
-            count++;
-            System.out.println("The doctor is returning " + p.getname());
-            mutex.release();
+            try{
+                outptr = (outptr - 1 + capacity) % capacity;
+                totalpatients[outptr] = p;
+                count++;
+                System.out.println("The doctor is returning " + p.getname());
+            }
+            finally{
+                mutex.release();
+            }
+
+            
 
             patients.release();
 
