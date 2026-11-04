@@ -19,22 +19,26 @@ public class Hospital {
         System.out.print("Number of patients: ");
         numberOfPatients = input.nextInt();
 
-        if (waitingRoomCapacity <= 0 || numberOfDoctors <= 0 || numberOfPatients <= 0) {
+        if (waitingRoomCapacity <= 0 ||
+                numberOfDoctors <= 0 ||
+                numberOfPatients <= 0) {
+
             System.out.println("All values must be greater than zero.");
             input.close();
             return;
         }
 
         WaitingRoom waitingRoom = new WaitingRoom(waitingRoomCapacity);
+
         TreatmentRooms treatmentRooms = new TreatmentRooms();
+
         Semaphore treatedPatients = new Semaphore(0);
 
         Thread[] doctorThreads = new Thread[numberOfDoctors];
 
         for (int i = 0; i < numberOfDoctors; i++) {
             doctorThreads[i] = new Thread(
-                    new Doctor(i + 1, waitingRoom, treatmentRooms, treatedPatients)
-            );
+                    new Doctor(i + 1, waitingRoom, treatmentRooms, treatedPatients));
             doctorThreads[i].start();
         }
 
@@ -50,10 +54,14 @@ public class Hospital {
         System.out.println("\n");
 
         for (int i = 0; i < numberOfPatients; i++) {
+
+            patients[i] = patients[i];
+
             patients[i].start();
         }
 
         for (int i = 0; i < numberOfPatients; i++) {
+
             try {
                 patients[i].join();
             } catch (InterruptedException e) {
@@ -78,6 +86,7 @@ public class Hospital {
         }
 
         for (int i = 0; i < numberOfDoctors; i++) {
+
             try {
                 doctorThreads[i].join();
             } catch (InterruptedException e) {
