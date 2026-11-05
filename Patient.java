@@ -8,12 +8,12 @@ public class Patient extends Thread {
 
     @Override
     public void run() {
-        System.out.println(getName() + " arrived.");
+        System.out.println(getName() + " arrived.\n");
         waitingRoom.addPatient(this);
     }
 
     public void leave() {
-        System.out.println(getName() + " left.");
+        System.out.println(getName() + " left.\n");
     }
 
     @Override

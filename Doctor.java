@@ -27,23 +27,23 @@ public class Doctor implements Runnable {
 				return;
 			}
 
-			System.out.println(name() + " is assigned to " + patient.getName() + ".");
+			System.out.println(name() + " is assigned to " + patient.getName() + ".\n");
 			boolean roomReserved = false;
 			try {
-				System.out.println(name() + " is trying to acquire a treatment room.");
+				System.out.println(name() + " is trying to acquire a treatment room.\n");
 				roomReserved = treatmentRooms.tryAcquire();
 				if (!roomReserved) {
-					System.out.println(name() + " could not acquire a treatment room.");
-					System.out.println(name() + " is sending " + patient.getName() + " back to the waiting room.");
+					System.out.println(name() + " could not acquire a treatment room.\n");
+					System.out.println(name() + " is sending " + patient.getName() + " back to the waiting room.\n");
 					waitingRoom.returnPatient(patient);
-					System.out.println(name() + " is now available.");
+					System.out.println(name() + " is now available.\n");
 					continue;
 				}
-				System.out.println(name() + " acquired a treatment room.");
-				System.out.println(name() + " begins treating " + patient.getName() + ".");
+				System.out.println(name() + " acquired a treatment room.\n");
+				System.out.println(name() + " begins treating " + patient.getName() + ".\n");
 
 				Thread.sleep(1000 + random.nextInt(2000));
-				System.out.println(name() + " finished treating " + patient.getName() + ".");
+				System.out.println(name() + " finished treating " + patient.getName() + ".\n");
 
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
@@ -51,10 +51,10 @@ public class Doctor implements Runnable {
 			} finally {
 				if (roomReserved) {
 					treatmentRooms.release();
-					System.out.println(name() + " released the treatment room.");
+					System.out.println(name() + " released the treatment room.\n");
 				}
 			}
-			System.out.println(name() + " is now available.");
+			System.out.println(name() + " is now available.\n");
 			patient.leave();
 			treated.release();
 		}

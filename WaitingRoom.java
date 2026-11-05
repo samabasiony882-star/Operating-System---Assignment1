@@ -23,8 +23,8 @@ class WaitingRoom {
             mutex.acquire();
             try {
                 if (count == capacity) {
-                    System.out.println("The waiting room is full!");
-                    System.out.println(p.getName() + " is waiting outside for an available seat.");
+                    System.out.println("The waiting room is full!\n");
+                    System.out.println(p.getName() + " is waiting outside for an available seat.\n");
                 }
             } finally {
                 mutex.release();
@@ -37,7 +37,7 @@ class WaitingRoom {
                 totalpatients[inptr] = p;
                 inptr = (inptr + 1) % capacity;
                 count++;
-                System.out.println(p.getName() + " entered the waiting room.");
+                System.out.println(p.getName() + " entered the waiting room.\n");
             } finally {
                 mutex.release();
             }
@@ -76,8 +76,8 @@ class WaitingRoom {
             mutex.acquire();
             try {
                 if (count == capacity) {
-                    System.out.println("The waiting room is full!");
-                    System.out.println(p.getName() + " is waiting outside for an available seat.");
+                    System.out.println("The waiting room is full!\n");
+                    System.out.println(p.getName() + " is waiting outside for an available seat.\n");
                 }
             } finally {
                 mutex.release();
@@ -90,7 +90,7 @@ class WaitingRoom {
                 totalpatients[inptr] = p;
                 inptr = (inptr + 1) % capacity;
                 count++;
-                System.out.println(p.getName() + " entered the waiting room.");
+                System.out.println(p.getName() + " entered the waiting room.\n");
             } finally {
                 mutex.release();
             }
